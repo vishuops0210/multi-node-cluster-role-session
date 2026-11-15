@@ -1,0 +1,38 @@
+# Control plane role: PDF Phase 6.
+# First master only: kubeadm init and Calico.
+# Other masters: kubeadm join with --control-plane.
+# The join values come from group_vars/join.yml, filled in after init.
+# See playbook-init.yml and playbook-join.yml for the two step run.
+
+- name: Init the cluster on the first master
+  ansible.builtin.command: >
+    kubeadm init
+    --control-plane-endpoint="{{ control_plane_endpoint }}"
+    --upload-certs
+    --pod-network-cidr={{ pod_network_cidr }}
+    --service-cidr={{ service_cidr }}
+  args:
+    creates: /etc/kubernetes/admin.conf
+  when: inventory_hostname == groups['control_plane'][0]
+
+- name: Set up kubeconfig from admin.conf
+  ansible.builtin.shell: |
+    mkdir -p $HOME/.kube
+    cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    chown $(id -u):$(id -g) $HOME/.kube/config
+  when: inventory_hostname == groups['control_plane'][0]
+
+- name: Install Calico CNI on the first master
+  ansible.builtin.command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests/calico.yaml
+  when: inventory_hostname == groups['control_plane'][0]
+
+- name: Join extra control plane nodes
+  ansible.builtin.command: >
+    kubeadm join {{ control_plane_endpoint }}
+    --token {{ kubeadm_token }}
+    --discovery-token-ca-cert-hash {{ kubeadm_ca_hash }}
+    --control-plane
+    --certificate-key {{ kubeadm_cert_key }}
+  args:
+    creates: /etc/kubernetes/kubelet.conf
+  when: inventory_hostname != groups['control_plane'][0]

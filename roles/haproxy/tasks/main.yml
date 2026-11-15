@@ -1,0 +1,31 @@
+# HAProxy role: PDF Phase 7.
+# Install, back up the stock config, render the backend from the
+# control_plane inventory group, restart.
+# Note the run order: this runs BEFORE kubeadm init, even though the
+# PDF lists it last. Init points at the HAProxy IP, so the LB must
+# exist before the other nodes try to join through it.
+
+- name: Install HAProxy
+  ansible.builtin.apt:
+    update_cache: true
+    name: haproxy
+    state: present
+
+- name: Back up the stock HAProxy config
+  ansible.builtin.copy:
+    src: /etc/haproxy/haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg.backup
+    remote_src: true
+    mode: "0644"
+
+- name: Render HAProxy config with all master nodes
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: "0644"
+
+- name: Restart HAProxy
+  ansible.builtin.service:
+    name: haproxy
+    state: restarted
+    enabled: true

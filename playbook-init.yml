@@ -1,0 +1,16 @@
+# Step 1: HAProxy first, then common prep on all K8s nodes, then init on master1.
+# Run: ansible-playbook -i inventory/hosts.yml playbook-init.yml
+- name: Set up HAProxy
+  hosts: haproxy
+  roles:
+    - haproxy
+
+- name: Prepare all Kubernetes nodes
+  hosts: control_plane:workers
+  roles:
+    - common
+
+- name: Init the cluster on the first master
+  hosts: control_plane
+  roles:
+    - control-plane

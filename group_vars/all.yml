@@ -1,0 +1,10 @@
+# Values taken straight from the PDF. Change only if your lab differs.
+k8s_version: 1.35.0-1.1
+calico_version: v3.32.1
+pod_network_cidr: 192.168.0.0/16
+service_cidr: 10.127.44.0/24
+
+# HAProxy IP. Fill this in first, init points at it.
+# Example: haproxy_ip: 192.168.1.10
+haproxy_ip: CHANGE_ME
+control_plane_endpoint: "{{ haproxy_ip }}:6443"

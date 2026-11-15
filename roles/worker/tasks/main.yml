@@ -1,0 +1,11 @@
+# Worker role: PDF Phase 6, worker join only.
+# The join values come from group_vars/join.yml, filled in after init.
+# Workers do not run kubeadm init and do not install Calico.
+
+- name: Join the worker node to the cluster
+  ansible.builtin.command: >
+    kubeadm join {{ control_plane_endpoint }}
+    --token {{ kubeadm_token }}
+    --discovery-token-ca-cert-hash {{ kubeadm_ca_hash }}
+  args:
+    creates: /etc/kubernetes/kubelet.conf

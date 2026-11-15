@@ -1,0 +1,7 @@
+# Filled in AFTER playbook-init.yml runs.
+# Copy the three values from the kubeadm init output on master1.
+# Tokens expire after 24 hours. If yours lapses, run on master1:
+# kubeadm token create --print-join-command
+kubeadm_token: CHANGE_ME
+kubeadm_ca_hash: "sha256:CHANGE_ME"
+kubeadm_cert_key: CHANGE_ME

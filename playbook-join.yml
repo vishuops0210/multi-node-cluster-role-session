@@ -1,0 +1,11 @@
+# Step 2: after init, fill group_vars/join.yml from the init output, then run this.
+# Run: ansible-playbook -i inventory/hosts.yml playbook-join.yml
+- name: Join extra control plane nodes
+  hosts: control_plane
+  roles:
+    - control-plane
+
+- name: Join worker nodes
+  hosts: workers
+  roles:
+    - worker
