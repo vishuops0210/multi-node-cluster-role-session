@@ -4,7 +4,6 @@ calico_version: v3.32.1
 pod_network_cidr: 192.168.0.0/16
 service_cidr: 10.127.44.0/24
 
-# HAProxy IP. Fill this in first, init points at it.
-# Example: haproxy_ip: 192.168.1.10
-haproxy_ip: CHANGE_ME
+# HAProxy IP, Virginia us-east-1 public IP, 2026-11-15 test run.
+haproxy_ip: 44.193.12.95
 control_plane_endpoint: "{{ haproxy_ip }}:6443"
